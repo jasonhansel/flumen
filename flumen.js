@@ -573,7 +573,7 @@ var Creatable = Base.extend({
 	create: function(fullDiff, cb) {
 		var elem = document.createElement(this.tag);
 		this.commands.forEach(function(cmd) {
-			doPatch(cmd, elem, fullDiff, cb);
+			runCommand(cmd, elem, fullDiff, cb);
 		});
 		return elem;
 	}
@@ -728,7 +728,7 @@ function enjoin(object) {
 
 }
 
-function doPatch(ch, node, fullDiff, cb) {
+function runCommand(ch, node, fullDiff, cb) {
 	superMatch(ch)
 		(SetAttributeCommand, function(name, value) {
 			if(name == 'checked') {
@@ -747,10 +747,10 @@ function doPatch(ch, node, fullDiff, cb) {
 			node.parentNode.replaceChild(state.create(), node);
 		})
 		(AddFullDiffCommand, function(code, command) {
-			doPatch(command, node, fullDiff.concat(code), cb);
+			runCommand(command, node, fullDiff.concat(code), cb);
 		})
 		(OnChildCommand, function(path, command) {
-			doPatch(command, node.childNodes[path], fullDiff, cb);
+			runCommand(command, node.childNodes[path], fullDiff, cb);
 		})
 		(AttachEventCommand, function(eventname) {
 			node.addEventListener(eventname, function(e) {
@@ -993,7 +993,7 @@ var runDom = function(sproc) {
 				// node = newNode;
 				// return;
 
-				doPatch(change.diff, node, [], function(loc, evt) {
+				runCommand(change.diff, node, [], function(loc, evt) {
 					trigger(loc.reduceRight(function(curr, next) {
 						return new SpecificEvent({
 							path: next,
