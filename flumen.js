@@ -382,19 +382,18 @@ function h(tagspec, att, slash) {
 							return new StateOut(state, this);
 						})
 						(StateDiff, function(arrState, diff) {
-							var res = new StatePair( state.new.slice(0) , arrState.slice(0));
-							var out = superMatch(res)
-								(StatePair, function(old, neww) {
-									return diffArrays(
+							return superMatch(
+									new StatePair( state.new.slice(0) , arrState.slice(0))
+								)(StatePair, function(old, neww) {
+									return new StateOut(this, diffArrays(
 										old,
 										neww,
 										function(a, b) {
 											return keyer(a) === keyer(b);
 										}
-									);
+									));
 								})
 							();
-							return new StateOut(res, out);
 						})
 					();
 				}, function() {
