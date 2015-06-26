@@ -616,7 +616,7 @@ var Bubble = Base.extend('data');
 function constantize(val) {
 	return new StreamProcessor(function(sink) {
 		sink.event(val);
-		return new Sink(noop);
+		return new Sink(function(){});
 	});
 }
 
@@ -829,8 +829,6 @@ function prop(name) {
 
 var Sink = Base.extend('event');
 
-
-function noop() {}
 
 
 function scanner(accum, makeInit) {
