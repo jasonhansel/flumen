@@ -424,7 +424,7 @@ function h(tagspec, att, slash) {
 										(InsertChange, function(index, value) {
 											var notFirst = false,
 												key = keyer(value);
-											sps[key] = mapper(value).sender(new Sink(function(v) {
+											sps[key] = mapper().sender(new Sink(function(v) {
 												if(!deleted[key]) {
 													if(Bubble.match(v)) {
 														emit.event(
@@ -666,16 +666,13 @@ function enjoin(object) {
 			}))
 			.compose(stateScan(function(st, v) {
 
-				// if(v.done) {
-				// 	// st.done = true;
-				// 	return new StateOut(st, new Nothing());
-				// }
 				if(v.increment) {
 					if(v.key !== 'events' && v.key.indexOf('events$$') !== 0) {
 						st.init2++;
 					}
 					return new StateOut(st, new Nothing());
 				}
+
 				//  todo make sure st.init === st.init2 always; then switch to init2 entirely...
 
 				var value = v.value,
