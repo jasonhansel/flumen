@@ -100,29 +100,6 @@ function superMatch(obj) {
 var EventData = Base.extend('data');
 var StatePair = Base.extend('old new');
 
-// The identity functor
-
-var Identity = Base.extend({
-	bind: function(fn) {
-		return new Identity(fn(this.v));
-	}
-}).extend('v');
-
-function unfold(seed, fn) {
-	var out = [];
-
-	while(true) {
-		var res = fn(seed);
-		if(!res) {
-			break;
-		}
-		out.push(res.output);
-		seed = res.state;
-	}
-	return seed;
-}
-
-
 function parseTagSpec(tagspec, attrs)  {
 
 	if(!tagspec) {
@@ -815,6 +792,7 @@ function fmap(fn) {
 	});
 }
 
+// For debugging only
 function slog(prefix) {
 	return new StreamProcessor(function(sink) {
 		return new Sink(function(val) {
@@ -848,7 +826,7 @@ function maybeMap() {
 
 function prop(name) {
 	return fmap(function(v) {
-		return (v && typeof v == 'object') ? v[name] : void 0;
+		return v[name];
 	});
 }
 

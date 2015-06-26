@@ -17,6 +17,7 @@ var h = flumen.h,
 
 // Known bugs:
 // - After cancelling via escape key, can "un-cancel" by clicking on new-todo <input>
+// - Editing/saving todos seems to be broken
 
 var stateProcessor = flumen.controller({
 	init: function() {
