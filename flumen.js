@@ -98,6 +98,8 @@ function superMatch(obj) {
 var EventData = Base.extend('data');
 var StatePair = Base.extend('old new');
 
+var TagSpec = Base.extend('tag attrs events autoclose');
+
 function parseTagSpec(tagspec, attrs)  {
 
 	if(!tagspec) {
@@ -156,12 +158,8 @@ function parseTagSpec(tagspec, attrs)  {
 		}
 	}
 
-	return {
-		tag: tag,
-		attrs: attrs,
-		events: events,
-		autoclose: autoclose
-	};
+	return new TagSpec(tag, attrs, events, autoclose);
+
 
 	// return rest.split(/(?=[#.])/).reduce(function(current, part) {
 	// 	if(!part) {
