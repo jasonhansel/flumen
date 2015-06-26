@@ -10,8 +10,6 @@ This document provides an approximate roadmap for the Flumen project. All of thi
 * Add tests (other than the simple one provided by "index.html")
 * Add documentation for the entire API (and for installation)
 * Get a fully working TodoMVC example working
-* Use UMD to define the main module, so that it works well with Browserify/AMD/etc.
-* Add docs for code style, etc.
 
 # Version 0.5.0
 
