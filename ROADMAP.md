@@ -10,6 +10,7 @@ This document provides an approximate roadmap for the Flumen project. All of thi
 * Add tests (other than the simple one provided by "index.html")
 * Add documentation for the entire API (and for installation)
 * Get a fully working TodoMVC example working
+    - See app.js for progress on this
 
 # Version 0.5.0
 

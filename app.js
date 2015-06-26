@@ -4,8 +4,19 @@
 var h = flumen.h,
 	ue = flumen.ue;
 
+// This implements TodoMVC. It is based off of Mercury's version.
 
-// To do: localStorage, routing, divide into components, other things listed below
+// To do:
+// - localStorage
+// - Routing
+// - Divide into components
+// - Add all features to ul.filters and the following button
+// - Fix miscellaneous bugs
+// - Improve performance (test against mercury)
+// - Simplify code, partly by improving Flumen itself
+
+// Known bugs:
+// - After cancelling via escape key, can "un-cancel" by clicking on new-todo <input>
 
 var stateProcessor = flumen.controller({
 	init: function() {
