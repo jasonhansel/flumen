@@ -461,7 +461,9 @@ function h(tagspec, att, slash) {
 											var keyx = keyer(value);
 											deleted[keyx] = true;
 											xstate.splice(index, 1);
-											emit.event(new Just(new StateDiff(xstate, new DeleteChildCommand(index))));
+											emit.event(new Just(
+												new StateDiff(xstate, new DeleteChildCommand(index))
+											));
 											delete sps[keyx];
 										})
 										(ReorderChange, function(oldIndex, newIndex) {
