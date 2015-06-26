@@ -830,7 +830,6 @@ function prop(name) {
 var Sink = Base.extend('event');
 
 
-// Heavily inspired by most.js
 function noop() {}
 
 
