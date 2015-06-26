@@ -500,7 +500,6 @@ function h(tagspec, att, slash) {
 	};
 
 	if(parsed.autoclose) {
-		// Immediately closing tags (only if there are attrs.)
 		return result();
 	} else {
 		return result;
