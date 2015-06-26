@@ -193,8 +193,8 @@ h()(
 						return len === 1 ? ' item left' : ' items left';
 					}) )
 				),
-				h('ul.filters')(),
-				h('button')()
+				h('ul.filters /'),
+				h('button /')
 			)
 		)
 	),

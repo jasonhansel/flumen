@@ -14,8 +14,6 @@
 
 'use strict';
 
-// function uniq()
-
 // 1. Scala-style classes
 var Base = (function extender(xtends) {
 	return function(fields) {
