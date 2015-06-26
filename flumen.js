@@ -251,13 +251,13 @@ function h(tagspec, att, slash) {
 		return fmap(function(stateL) {
 				return superMatch(stateL)
 					(EventData, function(data) {
-						return new PEvent({
+						return new SpecificEvent({
 							path: 'events$$' + data.type,
 							data: this
 						});
 					})
-					(PEvent, function(path, data) {
-						return new PEvent({
+					(SpecificEvent, function(path, data) {
+						return new SpecificEvent({
 							path: 'children$$' + path,
 							data: data
 						});
@@ -338,7 +338,7 @@ function h(tagspec, att, slash) {
 	result.each = function(array, mapper, keyer) {
 		var parent = result;
 		return fmap(function(evt) {
-			return new PEvent({
+			return new SpecificEvent({
 				path: 'children',
 				data: evt
 			});
@@ -348,7 +348,7 @@ function h(tagspec, att, slash) {
 				children:
 				fmap(function(evt) {
 					return superMatch(evt)
-						(PEvent, function() {
+						(SpecificEvent, function() {
 							return [ new Either.Right(this) ];
 						})
 						(UniversalEvent, function() {
@@ -409,7 +409,7 @@ function h(tagspec, att, slash) {
 
 					return new Sink(function(arr) {
 						superMatch(arr)
-							(PEvent, function(path, data) {
+							(SpecificEvent, function(path, data) {
 								if(!deleted[path]) {
 									sps[path].event(data);
 								}
@@ -603,7 +603,7 @@ function objectMap(obj, fn) {
 
 // var Diff   = Base.extend('diff newVal state');
 var Event  = Base.extend({});
-	var PEvent = Event.extend('path data');
+	var SpecificEvent = Event.extend('path data');
 	var UniversalEvent = Event.extend('data');
 var Bubble = Base.extend('data');
 
@@ -629,7 +629,7 @@ function simpleEnjoin(object) {
 						orderedSinks[k].event(this);
 					}
 				})
-				(PEvent, function(path, data) {
+				(SpecificEvent, function(path, data) {
 					orderedSinks[path].event(data);
 				})
 			();
@@ -925,7 +925,7 @@ function ue(processor, isAttr) {
 				(UniversalEvent, function(data) {
 					input.event(data);
 				})
-				(PEvent, function(){
+				(SpecificEvent, function(){
 					// NOP
 				})
 			();
@@ -958,7 +958,7 @@ function loop(streamfac) {
 function makeCB(getTrigger) {
 	return function cb(loc, evt) {
 		getTrigger()(loc.reduceRight(function(curr, next) {
-			return new PEvent({
+			return new SpecificEvent({
 				path: next,
 				data: curr
 			});
@@ -983,7 +983,7 @@ var runDom = function(sproc) {
 			} else {
 				// var newNode = (change.state).create([], function(loc, evt) {
 				// 	trigger(loc.reduceRight(function(curr, next) {
-				// 		return new PEvent({
+				// 		return new SpecificEvent({
 				// 			path: next,
 				// 			data: curr
 				// 		});
@@ -995,7 +995,7 @@ var runDom = function(sproc) {
 
 				doPatch(change.diff, node, [], function(loc, evt) {
 					trigger(loc.reduceRight(function(curr, next) {
-						return new PEvent({
+						return new SpecificEvent({
 							path: next,
 							data: curr
 						});
