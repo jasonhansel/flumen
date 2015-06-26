@@ -133,11 +133,10 @@ function parseTagSpec(tagspec, attrs)  {
 	}
 
 	var part;
-	do {
+	while(tagspec) {
 		if (/^\s*\/$/.test(tagspec)) {
 			autoclose = true;
-			// tagspec = '';
-			break;
+			tagspec = '';
 		} else if(part = /^\.(\w|-)+/.exec(tagspec)) {
 			part = part[0];
 
@@ -157,7 +156,7 @@ function parseTagSpec(tagspec, attrs)  {
 		} else if(tagspec) {
 			throw new Error('Invalid tagspec');
 		}
-	} while(tagspec);
+	}
 
 	return {
 		tag: tag,
