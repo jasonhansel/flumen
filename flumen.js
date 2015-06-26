@@ -908,11 +908,12 @@ function onlyLeft(processor) {
 
 function ue(processor, isAttr) {
 	return new StreamProcessor(function(emit) {
-		var last = -2048;
+		var last,
+			first = true;
 
 		var input = processor.sender(new Sink(function(v) {
 
-			if(v !== last || typeof v === 'object' || typeof last === 'object') {
+			if(first || v !== last || typeof v === 'object' || typeof last === 'object') {
 				last = v;
 				if(!isAttr) {
 					v = new Creatable('span', [
@@ -920,6 +921,7 @@ function ue(processor, isAttr) {
 					]);
 				}
 				emit.event(new StateDiff( v, new CreateCommand( v ) ));
+				first = false;
 			}
 
 		}));
