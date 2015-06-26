@@ -149,8 +149,14 @@ function parseTagSpec(tagspec, attrs)  {
 	var tag = parts[1] || 'div';
 	tagspec = parts[2];
 
-	while(true) {
-		var part;
+	function addClass(part) {
+		attrs.class = attrs.class.compose(fmap(function(x) {
+			return x + ' ' + part.slice(1);
+		}));
+	}
+
+	var part;
+	do {
 		if (/^\s*\/$/.test(tagspec)) {
 			autoclose = true;
 			// tagspec = '';
@@ -161,11 +167,7 @@ function parseTagSpec(tagspec, attrs)  {
 			if(typeof attrs.class == 'string') {
 				attrs.class += ' ' + part.slice(1);
 			} else {
-				(function(part) {
-					attrs.class = attrs.class.compose(fmap(function(x) {
-						return x + ' ' + part.slice(1);
-					}));
-				})(part);
+				addClass(part);
 			}
 			tagspec = tagspec.slice(part.length);
 		} else if (part = /^#(\w|-)+/.exec(tagspec)) {
@@ -175,12 +177,10 @@ function parseTagSpec(tagspec, attrs)  {
 		} else if (part = /^ (\w+)=(?:((?:\w|-)+)|\"([^"]*?)\")/.exec(tagspec) ) {
 			attrs[ part[1] ] = part[3] || part[2];
 			tagspec = tagspec.slice(part[0].length);
-		} else  if(!part) {
-			break;
-		} else {
+		} else if(part) {
 			throw new Error('Invalid tagspec');
 		}
-	}
+	} while(part);
 
 	return {
 		tag: tag,
@@ -1069,15 +1069,15 @@ function controller(spec) {
 function component(ctrl, view) {
 	return loop(
 		onlyLeft(ctrl)
-			.compose(flumen.fmap(function(v) {
+			.compose(fmap(function(v) {
 				return v.value;
 			}))
 			.compose(view)
-			.compose(flumen.fmap(function(v) {
-				if(flumen.Bubble.match(v)) {
+			.compose(fmap(function(v) {
+				if(Bubble.match(v)) {
 					return v.data;
 				}
-				return new flumen.Either.IO(v);
+				return new Either.IO(v);
 			}))
 	);
 }
