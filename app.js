@@ -16,7 +16,6 @@ var stateProcessor = flumen.controller({
 		};
 	},
 	addTodo: function(state, arg1) {
-
 		state.todos.push({
 			ID: state.counter,
 			Name: state.text,
@@ -24,11 +23,9 @@ var stateProcessor = flumen.controller({
 			editing: false
 		});
 		state.counter++;
-		// state.text = '';
 		return state;
 	},
 	deleteTodo: function(state, arg1) {
-		console.log('DODEL', arg1);
 		state.todos = state.todos.filter(function(todo) {
 			return todo.ID !== arg1.ID;
 		});
@@ -66,12 +63,9 @@ var stateProcessor = flumen.controller({
 		return state;
 	},
 	saveChange: function(state, value, todo) {
-		console.log('DOSAVE');
-
 		state.todos = state.todos.map(function(t) {
 			if(t.ID === todo.ID) {
 				t.Name = value;
-
 				t.editing = false;
 			}
 			return t;
@@ -79,14 +73,10 @@ var stateProcessor = flumen.controller({
 		return state;
 	},
 	cancelChange: function(state, value, todo) {
-		console.log('DOSAVE');
-
 		state.todos = state.todos.map(function(t) {
 			if(t.ID === todo.ID) {
-				// t.Name = value;
 				t.workingText = t.Name;
 				t.editing = false;
-				// console.log('PROD', t);
 			}
 			return t;
 		});
