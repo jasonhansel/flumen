@@ -1,22 +1,16 @@
-/* jshint undef: true */
-/* globals document */
+/* globals document, define, module */
 /* exported flumen */
 
-//  ▒██████▒██▓     █    ██  ███▄ ▄███▓▓█████  ███▄    █
-//  ▓██   ▒▓██▒     ██  ▓██▒▓██▒▀█▀ ██▒▓█   ▀  ██ ▀█   █
-//  ▒████ ░▒██░    ▓██  ▒██░▓██    ▓██░▒███   ▓██  ▀█ ██▒
-//  ░▓█▒  ░▒██░    ▓▓█  ░██░▒██    ▒██ ▒▓█  ▄ ▓██▒  ▐▌██▒
-//  ░▒█░   ░██████▒▒▒█████▓ ▒██▒   ░██▒░▒████▒▒██░   ▓██░
-//   ▒ ░   ░ ▒░▓  ░░▒▓▒ ▒ ▒ ░ ▒░   ░  ░░░ ▒░ ░░ ▒░   ▒ ▒
-//   ░     ░ ░ ▒  ░░░▒░ ░ ░ ░  ░      ░ ░ ░  ░░ ░░   ░ ▒░
-//   ░ ░     ░ ░    ░░░ ░ ░ ░      ░      ░      ░   ░ ░
-//             ░  ░   ░            ░      ░  ░         ░
-// Flumen Pre-Release
-
-
-
-
-var flumen = (function() {
+(function (root, factory) {
+	// See https://github.com/umdjs/umd/blob/master/returnExports.js
+    if (typeof define === 'function' && define.amd) {
+        define([], factory);
+    } else if (typeof exports === 'object') {
+        module.exports = factory();
+    } else {
+        root.flumen = factory();
+  }
+}(this, function () {
 
 'use strict';
 
@@ -1127,4 +1121,4 @@ return {
 	component: component
 };
 
-})();
+}));
