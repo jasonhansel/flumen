@@ -109,22 +109,22 @@ h()(
 				value: flumen.fmap(function(state) {
 					return state ? state.text : '';
 				}),
-				oninput: function(e, state, ccall) {
-					ccall('set', 'text', e.target.value);
+				oninput: function(e, state, call) {
+					call('set', 'text', e.target.value);
 				},
 
-				onkeydown: function(e, state, ccall) {
+				onkeydown: function(e, state, call) {
 					if(e.which === 13) {
 						e.preventDefault();
-						ccall('addTodo');
+						call('addTodo');
 					}
 				}
 			})
 		),
 		h('section.main')(
 			h('input.toggle-all#toggle-all type=checkbox /',{
-				onchange: function(e, state, ccall) {
-					ccall('changeAll', e.target.checked);
+				onchange: function(e, state, call) {
+					call('changeAll', e.target.checked);
 				}
 			}),
 			h('label for=toggle-all')('Mark all as incomplete'),
@@ -136,21 +136,21 @@ h()(
 				})(
 					h('div.view')(
 						h('input.toggle type=checkbox /', {
-							onchange: function(e, state, ccall) {
-								ccall('toggleCompleted', state);
+							onchange: function(e, state, call) {
+								call('toggleCompleted', state);
 							},
 							checked: flumen.prop('completed')
 						}),
 						h('label', {
-							ondblclick: function(e, state, ccall) {
-								ccall('startEditing', state);
+							ondblclick: function(e, state, call) {
+								call('startEditing', state);
 							}
 						})(
 							ue(flumen.prop('Name'))
 						),
 						h('button.destroy /', {
-							onclick: function(e, state, ccall) {
-								ccall('deleteTodo', state);
+							onclick: function(e, state, call) {
+								call('deleteTodo', state);
 							}
 						})
 					),
@@ -161,15 +161,15 @@ h()(
 						}),
 
 						// also other events
-						onblur: function(e, state, ccall) {
-							ccall('saveChange', e.target.value, state);
+						onblur: function(e, state, call) {
+							call('saveChange', e.target.value, state);
 						},
 
-						onkeydown: function(e, state, ccall) {
+						onkeydown: function(e, state, call) {
 							if(e.which === 13) {
-								ccall('saveChange', e.target.value, state);
+								call('saveChange', e.target.value, state);
 							} else if(e.which === 27) {
-								ccall('cancelChange', e.target.value, state);
+								call('cancelChange', e.target.value, state);
 							}
 						}
 

@@ -219,10 +219,10 @@ function h(tagspec, att, slash) {
 				return new Sink(function(val) {
 					var arr = [];
 					fn(val.diff, val.state, function () {
-						arr.push(concall.apply(this, arguments));
+						var args = Array.prototype.slice.call(arguments);
+						arr.push(new Bubble(new Either.Feedback(args)));
 					});
 					sink.event(arr);
-					// sink.event(fn(val));
 				});
 			});
 		}
@@ -984,11 +984,6 @@ var runDom = function(sproc) {
 };
 
 
-// Returns a message to be sent to a controller
-function concall() {
-	var args = Array.prototype.slice.call(arguments);
-	return new Bubble(new Either.Feedback(args));
-}
 
 function controller(spec) {
 	return scanner(function(state, x) {
@@ -1044,7 +1039,6 @@ return {
 	Bubble: Bubble,
 	UniversalEvent: UniversalEvent,
 	ue: ue,
-	concall: concall,
 	controller: controller,
 	component: component
 };
