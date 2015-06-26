@@ -383,13 +383,17 @@ function h(tagspec, att, slash) {
 						})
 						(StateDiff, function(arrState, diff) {
 							var res = new StatePair( state.new.slice(0) , arrState.slice(0));
-							var out = diffArrays(
-								res.old,
-								res.new,
-								function(a, b) {
-									return keyer(a) === keyer(b);
-								}
-							);
+							var out = superMatch(res)
+								(StatePair, function(old, neww) {
+									return diffArrays(
+										old,
+										neww,
+										function(a, b) {
+											return keyer(a) === keyer(b);
+										}
+									);
+								})
+							();
 							return new StateOut(res, out);
 						})
 					();
