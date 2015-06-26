@@ -1009,19 +1009,22 @@ function controller(spec) {
 
 function component(ctrl, view) {
 	return loop(
-			new StreamProcessor(function(emit) {
-				var input = ctrl.sender(emit);
-				return new Sink(function(val) {
-					superMatch(val)
-						(Either.Left, function(x) {
-							input.event(x);
-						})
-						(Either.Right, function(x) {
-							emit.event(x);
-						})
-					();
-				});
+			fmap(function(x) {
+				return superMatch(x)
+					(Either.Left, function(x) {
+						return new SpecificEvent('left', x);
+					})
+					(Either.Right, function(x) {
+						return new SpecificEvent('right', x);
+					})
+				();
 			})
+			.compose(simpleEnjoin({
+				left: ctrl,
+				right: fmap(function(x) {
+					return x;
+				})
+			}, true))
 			.compose(view)
 			.compose(fmap(function(v) {
 				if(Bubble.match(v)) {
