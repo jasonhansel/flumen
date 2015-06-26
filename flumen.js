@@ -157,7 +157,7 @@ function parseTagSpec(tagspec, attrs)  {
 		} else if(tagspec) {
 			throw new Error('Invalid tagspec');
 		}
-	} while(part);
+	} while(tagspec);
 
 	return {
 		tag: tag,
