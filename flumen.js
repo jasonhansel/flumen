@@ -349,33 +349,34 @@ function h(tagspec, att, slash) {
 				fmap(function(evt) {
 					return superMatch(evt)
 						(SpecificEvent, function() {
-							return [ new Either.Right(this) ];
+							return [ new SpecificEvent('right', this) ];
 						})
 						(UniversalEvent, function() {
-							return [ new Either.Left(this) ];
+							return [ new SpecificEvent('left', this) ];
 						})
 					();
 				})
 				.compose(flatMap())
 				.compose(
-					onlyLeft(
-						fmap(function(x) {
-							return superMatch(x)
-								(UniversalEvent, function(data) {
-									return data;
-								})
-							();
+					simpleEnjoin({
+						left: fmap(function(x) {
+								return superMatch(x)
+									(UniversalEvent, function(data) {
+										return data;
+									})
+								();
+							})
+							.compose(array)
+							.compose(fmap(function(x) {
+								return new StateDiff(Array.isArray(x) ? x : [], null);
+							})),
+						right: fmap(function(x) {
+							return x;
 						})
-						.compose(array)
-						.compose(fmap(function(x) {
-							return new StateDiff(Array.isArray(x) ? x : [], null);
-						}))
-					)
+					}, true)
 				)
-				.compose(fmap(function(x) {
-					return x.value;
-				}))
 				.compose(stateScan(function(state, v) {
+
 					return superMatch(v)
 						(Event, function(path, data) {
 							return new StateOut(state, this);
@@ -616,14 +617,17 @@ function constantize(val) {
 	});
 }
 
-function simpleEnjoin(object) {
+function simpleEnjoin(object, noDone) {
 	return new StreamProcessor(function(sink) {
 		var orderedSinks = objectMap(object, function (val, key) {
 			return val.sender(sink);
+
 		});
-		sink.event({
-			done: true
-		});
+		if(!noDone) {
+			sink.event({
+				done: true
+			});
+		}
 		return new Sink(function(stateL) {
 			superMatch(stateL)
 				(UniversalEvent, function() {
@@ -883,26 +887,6 @@ var Either = Base.extend({});
 Either.Feedback = Either.Left;
 Either.IO = Either.Right;
 
-
-// 'first' in arrows
-function onlyLeft(processor) {
-	return new StreamProcessor(function(emit) {
-		var input = processor.sender(new Sink(function(output) {
-			emit.event(new Either.Left(output));
-		}));
-		return new Sink(function(val) {
-			superMatch(val)
-				(Either.Left, function(x) {
-					input.event(x);
-				})
-				(Either.Right, function(x) {
-					emit.event(this);
-				})
-			();
-		});
-	});
-}
-
 function ue(processor, isAttr) {
 	return new StreamProcessor(function(emit) {
 		var last,
@@ -1025,10 +1009,21 @@ function controller(spec) {
 
 function component(ctrl, view) {
 	return loop(
-		onlyLeft(ctrl)
-			.compose(fmap(function(v) {
-				return v.value;
-			}))
+			new StreamProcessor(function(emit) {
+				var input = ctrl.sender(new Sink(function(output) {
+					emit.event(output);
+				}));
+				return new Sink(function(val) {
+					superMatch(val)
+						(Either.Left, function(x) {
+							input.event(x);
+						})
+						(Either.Right, function(x) {
+							emit.event(x);
+						})
+					();
+				});
+			})
 			.compose(view)
 			.compose(fmap(function(v) {
 				if(Bubble.match(v)) {
@@ -1052,7 +1047,6 @@ return {
 	StreamProcessor: StreamProcessor,
 	scanner: scanner,
 	Either: Either,
-	onlyLeft: onlyLeft,
 	flatMap: flatMap,
 	Bubble: Bubble,
 	UniversalEvent: UniversalEvent,
