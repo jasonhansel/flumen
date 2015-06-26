@@ -1,0 +1,9 @@
+node_modules
+*.swp
+.idea
+*.sublime-project
+*.sublime-workspace
+Desktop.ini
+Thumbs.db
+ehthumbs.db
+*.DS_Store

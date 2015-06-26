@@ -1,0 +1,18 @@
+{
+  "name": "Flumen",
+  "version": "0.0.2",
+  "description": "A stream processor based approach to front-end UI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "http-server -p 3000 -o -c-1"
+  },
+  "author": "Jason Hansel",
+  "license": "MIT",
+  "dependencies": {
+    "grunt": "^0.4.5",
+    "grunt-http-server": "^1.3.0",
+    "todomvc-app-css": "^2.0.1",
+    "todomvc-common": "^1.0.1"
+  }
+}
