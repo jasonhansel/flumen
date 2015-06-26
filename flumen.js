@@ -180,7 +180,6 @@ function parseTagSpec(tagspec, attrs)  {
 		} else {
 			throw new Error('Invalid tagspec');
 		}
-		console.log('looping', tagspec);
 	}
 
 	return {
@@ -356,7 +355,6 @@ function h(tagspec, att, slash) {
 
 								if(path.indexOf('attrs$$') === 0) {
 									path = path.slice(7);
-									// console.log('WILLSET', command);
 									return new Just(
 										new StateDiff(
 											newState,
@@ -462,14 +460,11 @@ function h(tagspec, att, slash) {
 					return new Sink(function(arr) {
 						superMatch(arr)
 							(PEvent, function(path, data) {
-								// console.log('RECEIPT', path, data);
 								if(!deleted[path]) {
 									sps[path].event(data);
 								}
 							})
 							(StateDiff, function(state, diff) {
-
-								// console.log('RECEIVED', state);
 
 								lastState = state;
 
@@ -536,7 +531,6 @@ function h(tagspec, att, slash) {
 				return superMatch(cmd)
 					(Bubble, true)
 					(StateDiff, function(state, diff) {
-						console.log('SC', state.children);
 						var parent = state.parent;
 						return new StateDiff(
 							new Creatable(parent.tag,
@@ -573,8 +567,6 @@ var ArrayChange = Base.extend({}),
 // http://jsperf.com/array-diff-simple/edit
 
 function diffArrays(a, b, compare) {
-
-	// console.log('DODIFF', a, b);
 	var origB = b;
 	a = a.slice(0);
 	b = b.slice(0);
@@ -732,11 +724,6 @@ function enjoin(object) {
 				}
 				//  todo make sure st.init === st.init2 always; then switch to init2 entirely...
 
-				if(v.first) {
-					// console.log('FIRSTNOTDONE', v);
-				}
-				// console.log('REC', st.init, st.init2, st.done, st.init === st.init2, st.id);
-
 				var value = v.value,
 					key = v.key,
 					first = v.first;
@@ -792,7 +779,6 @@ function doPatch(ch, node, fullDiff, cb) {
 	superMatch(ch)
 		(SetAttributeCommand, function(name, value) {
 			if(name == 'checked') {
-				console.log('@CK', value);
 				node.checked = value;
 			} else {
 				node.setAttribute(name, value);
@@ -852,7 +838,7 @@ function fmap(fn) {
 function slog(prefix) {
 	return new StreamProcessor(function(sink) {
 		return new Sink(function(val) {
-			console.log('SLOG', prefix, val);
+			console.log('Debug message: ', prefix, val);
 			sink.event(val);
 		});
 	});
@@ -1016,7 +1002,6 @@ function loop(streamfac) {
 
 function makeCB(getTrigger) {
 	return function cb(loc, evt) {
-		// console.log('SENDING-MK-EVENT', loc);
 		getTrigger()(loc.reduceRight(function(curr, next) {
 			return new PEvent({
 				path: next,
@@ -1042,7 +1027,6 @@ var runDom = function(sproc) {
 				node = elem;
 			} else {
 				// var newNode = (change.state).create([], function(loc, evt) {
-				// 	// console.log('SENDING-MK-EVENT', loc);
 				// 	trigger(loc.reduceRight(function(curr, next) {
 				// 		return new PEvent({
 				// 			path: next,
