@@ -154,7 +154,7 @@ function parseTagSpec(tagspec, attrs)  {
 		} else if (part = /^ (\w+)=(?:((?:\w|-)+)|\"([^"]*?)\")/.exec(tagspec) ) {
 			attrs[ part[1] ] = part[3] || part[2];
 			tagspec = tagspec.slice(part[0].length);
-		} else if(part) {
+		} else if(tagspec) {
 			throw new Error('Invalid tagspec');
 		}
 	} while(part);
