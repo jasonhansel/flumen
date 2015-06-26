@@ -373,7 +373,7 @@ function h(tagspec, att, slash) {
 						right: fmap(function(x) {
 							return x;
 						})
-					}, true)
+					})
 				)
 				.compose(stateScan(function(state, v) {
 
@@ -623,11 +623,6 @@ function simpleEnjoin(object, noDone) {
 			return val.sender(sink);
 
 		});
-		if(!noDone) {
-			sink.event({
-				done: true
-			});
-		}
 		return new Sink(function(stateL) {
 			superMatch(stateL)
 				(UniversalEvent, function() {
@@ -671,10 +666,10 @@ function enjoin(object) {
 			}))
 			.compose(stateScan(function(st, v) {
 
-				if(v.done) {
-					st.done = true;
-					return new StateOut(st, new Nothing());
-				}
+				// if(v.done) {
+				// 	// st.done = true;
+				// 	return new StateOut(st, new Nothing());
+				// }
 				if(v.increment) {
 					if(v.key !== 'events' && v.key.indexOf('events$$') !== 0) {
 						st.init2++;
@@ -1024,7 +1019,7 @@ function component(ctrl, view) {
 				right: fmap(function(x) {
 					return x;
 				})
-			}, true))
+			}))
 			.compose(view)
 			.compose(fmap(function(v) {
 				if(Bubble.match(v)) {
