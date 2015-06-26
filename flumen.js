@@ -1010,9 +1010,7 @@ function controller(spec) {
 function component(ctrl, view) {
 	return loop(
 			new StreamProcessor(function(emit) {
-				var input = ctrl.sender(new Sink(function(output) {
-					emit.event(output);
-				}));
+				var input = ctrl.sender(emit);
 				return new Sink(function(val) {
 					superMatch(val)
 						(Either.Left, function(x) {
