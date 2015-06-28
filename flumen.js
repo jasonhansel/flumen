@@ -953,7 +953,7 @@ var runDom = function(sproc) {
 
 function controller(spec) {
 	return scanner(function(state, x) {
-			return spec[ x[0]].apply(null, [state].concat(x.slice(1)));
+			return spec[ x[0] ].apply(null, [state].concat(x.slice(1)));
 		}, spec.init)
 		.compose(fmap(function(val) {
 			return new UniversalEvent(val);
