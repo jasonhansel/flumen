@@ -383,6 +383,10 @@ function h(tagspec, att, slash) {
 								diff.forEach(function(change) {
 									superMatch(change)
 										(InsertChange, function(index, value) {
+											if(index !== arr.state.length - 1) {
+												throw new Error('Can only insert at the end of an array!');
+											}
+
 											var notFirst = false,
 												key = keyer(value);
 											childProcessors[key] = mapper()
