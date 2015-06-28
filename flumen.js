@@ -61,10 +61,8 @@ var Base = (function extender(xtends) {
 			};
 		}
 
-
 		Constructor.match = function(x) { return x && typeof x == 'object' &&  x instanceof Constructor; };
 		Constructor.prototype.constructor = Constructor;
-
 
 		return Constructor;
 	};
@@ -407,7 +405,7 @@ function h(tagspec, att, slash) {
 					var xstate = [];
 					var lastState = [];
 
-					emit.event( new Nothing() );
+					emit.event( new Just(new StateDiff([], null)) );
 
 					return new Sink(function(arr) {
 						superMatch(arr)
@@ -493,7 +491,7 @@ function h(tagspec, att, slash) {
 						return new StateDiff(
 							new Creatable(parent.tag,
 								parent.commands.concat(
-									state.children || []
+									state.children
 								)
 							),
 							diff.command
@@ -711,7 +709,7 @@ function enjoin(object) {
 			}, function() {
 				var init = 0;
 				for(var k in object) {
-					if(k !== 'events' && k.indexOf('events$$') !== 0 && k !== 'children') {
+					if(k.indexOf('events$$') !== 0) {
 						init++;
 					}
 				}
