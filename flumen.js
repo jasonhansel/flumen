@@ -152,8 +152,14 @@ function parseTagSpec(tagspec, attrs)  {
 			part = part[0];
 			attrs.id = part.slice(1);
 			tagspec = tagspec.slice(part.length);
-		} else if (part = /^ (\w+)=(?:((?:\w|-)+)|\"([^"]*?)\")/.exec(tagspec) ) {
-			attrs[ part[1] ] = part[3] || part[2];
+		} else if (part = /^ (\w+)=((?:\w|-)+|\"[^"]*?\")/.exec(tagspec) ) {
+
+			if(part[2][0] === '"' || part[2][0] === "'") {
+				// Allow string escapes
+				part[2] = JSON.parse(part[2]);
+			}
+
+			attrs[ part[1] ] = part[2];
 			tagspec = tagspec.slice(part[0].length);
 		} else if(tagspec) {
 			throw new Error('Invalid tagspec');
