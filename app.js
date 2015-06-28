@@ -124,17 +124,16 @@ var todoItem = flumen.view(function(h, fmap, prop, asText) {
 		),
 		h('input.edit /', {
 			type: 'text',
+
+			// 2 way data binding
 			value:  prop('workingText'),
+			oninput: function(e, state, call) { call('setWorkingText', e.target.value, state); },
 
-			oninput: function(e, state, call) {
-				call('setWorkingText', e.target.value, state);
-			},
 
-			// also other events
+			// Saving/cancelling
 			onblur: function(e, state, call) {
 				call('saveChange', state);
 			},
-
 			onkeydown: function(e, state, call) {
 				if(e.which === 13) {
 					call('saveChange', state);
@@ -190,8 +189,14 @@ var html = flumen.view(function(h, fmap, prop, asText) {
 						),
 						asText(fmap(function(state) { return state.todos.length === 1 ? ' item left' : ' items left'; }))
 					),
-					h('ul.filters /'),
-					h('button /')
+					h('ul.filters')(
+						h('li')(h('a.selected')( 'All' )),
+						h('li')(h('a')( 'Active' )),
+						h('li')(h('a')( 'Completed' ))
+					),
+					h('button.clear-completed')(
+						'Clear completed'
+					)
 				)
 			)
 		),
