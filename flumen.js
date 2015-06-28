@@ -206,21 +206,21 @@ function h(tagspec, att, slash) {
 		}
 
 		for(var k in events) {
-			merged[ 'events$$' + k ] = eventFix.compose( eventWrap(k) ).compose(flatMap());
+			merged[ 'events::' + k ] = eventFix.compose( eventWrap(k) ).compose(flatMap());
 		}
 
 		for(k in attrs) {
-			merged[ 'attrs$$' + k ] = StreamProcessor.match(attrs[k]) ? ue(attrs[k], true) : attrs[k];
+			merged[ 'attrs::' + k ] = StreamProcessor.match(attrs[k]) ? ue(attrs[k], true) : attrs[k];
 		}
 
 		children.forEach(function(child, index) {
-			merged[ 'children$$' + index ] = child;
+			merged[ 'children::' + index ] = child;
 		});
 
 		merged = objectMap(merged, function(val, key) {
 
 			if(!StreamProcessor.match(val)) {
-				val = ue( constantize(val), key.indexOf('children$$') === 0 ? false : true );
+				val = ue( constantize(val), key.indexOf('children::') === 0 ? false : true );
 			}
 
 			return val;
@@ -230,13 +230,13 @@ function h(tagspec, att, slash) {
 				return superMatch(stateL)
 					(EventData, function(data) {
 						return new SpecificEvent({
-							path: 'events$$' + data.type,
+							path: 'events::' + data.type,
 							data: this
 						});
 					})
 					(SpecificEvent, function(path, data) {
 						return new SpecificEvent({
-							path: 'children$$' + path,
+							path: 'children::' + path,
 							data: data
 						});
 					})
@@ -255,10 +255,10 @@ function h(tagspec, att, slash) {
 						var patches = [];
 
 						for(var k in state) {
-							if(k.indexOf('attrs$$') === 0) {
+							if(k.indexOf('attrs::') === 0) {
 								patches.push(new SetAttributeCommand(k.slice(7), state[k]));
 							}
-							if(k.indexOf('children$$') === 0) {
+							if(k.indexOf('children::') === 0) {
 								children[k.slice(10) * 1] = state[k];
 							}
 						}
@@ -281,7 +281,7 @@ function h(tagspec, att, slash) {
 						return superMatch(diff)
 							(OnChildCommand, function(path, command) {
 
-								if(path.indexOf('attrs$$') === 0) {
+								if(path.indexOf('attrs::') === 0) {
 									path = path.slice(7);
 									return new Just(
 										new StateDiff(
@@ -292,7 +292,7 @@ function h(tagspec, att, slash) {
 											)
 										)
 									);
-								} else if(path.indexOf('children$$') === 0) {
+								} else if(path.indexOf('children::') === 0) {
 									path = path.slice(10) * 1;
 									return new Just(
 										new StateDiff(newState,
@@ -648,7 +648,7 @@ function enjoin(object) {
 			.compose(stateScan(function(st, v) {
 
 				if(v.increment) {
-					if(v.key.indexOf('events$$') !== 0) {
+					if(v.key.indexOf('events::') !== 0) {
 						st.init2++;
 					}
 					return new StateOut(st, new Nothing());
@@ -691,7 +691,7 @@ function enjoin(object) {
 			}, function() {
 				var init = 0;
 				for(var k in object) {
-					if(k.indexOf('events$$') !== 0) {
+					if(k.indexOf('events::') !== 0) {
 						init++;
 					}
 				}
