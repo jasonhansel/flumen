@@ -566,26 +566,14 @@ var Creatable = Base.extend({
 var StateDiff = Command.extend('state diff');
 
 
-// Each function =====
-
-
-// Etc. =====
-
-
 function objectMap(obj, fn) {
-	if (Array.isArray(obj)) {
-		return obj.map(fn);
-	} else {
-		var newObj = {};
-		for (var key in obj) {
-			newObj[key] = fn(obj[key], key, obj);
-		}
-		return newObj;
+	var newObj = {};
+	for (var key in obj) {
+		newObj[key] = fn(obj[key], key, obj);
 	}
+	return newObj;
 }
 
-
-// var Diff   = Base.extend('diff newVal state');
 var Event  = Base.extend({});
 	var SpecificEvent = Event.extend('path data');
 	var UniversalEvent = Event.extend('data');
@@ -600,9 +588,8 @@ function constantize(val) {
 
 function simpleEnjoin(object, noDone) {
 	return new StreamProcessor(function(sink) {
-		var orderedSinks = objectMap(object, function (val, key) {
+		var orderedSinks = objectMap(object, function(val) {
 			return val.sender(sink);
-
 		});
 		return new Sink(function(stateL) {
 			superMatch(stateL)
@@ -935,17 +922,21 @@ var runDom = function(sproc) {
 				document.body.appendChild(elem);
 				node = elem;
 			} else {
-				// var newNode = (change.state).create([], function(loc, evt) {
-				// 	trigger(loc.reduceRight(function(curr, next) {
-				// 		return new SpecificEvent({
-				// 			path: next,
-				// 			data: curr
-				// 		});
-				// 	}, new EventData(evt)));
-				// });
-				// document.body.replaceChild(newNode, node);
-				// node = newNode;
-				// return;
+				/*
+					Uncomment this code to enable recreate-every-time mode
+
+					var newNode = (change.state).create([], function(loc, evt) {
+						trigger(loc.reduceRight(function(curr, next) {
+							return new SpecificEvent({
+								path: next,
+								data: curr
+							});
+						}, new EventData(evt)));
+					});
+					document.body.replaceChild(newNode, node);
+					node = newNode;
+					return;
+				*/
 
 				runCommand(change.diff, node, [], function(loc, evt) {
 					trigger(loc.reduceRight(function(curr, next) {
