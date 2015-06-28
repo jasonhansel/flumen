@@ -41,8 +41,8 @@ var stateProcessor = flumen.controller({
 		state.counter++;
 		return state;
 	},
-	set: function(state, prop, to) {
-		state[prop] = to;
+	setText: function(state, to) {
+		state.text = to;
 		return state;
 	},
 	toggleCompleted: function(state, arg1) {
@@ -102,14 +102,14 @@ flumen.view(function(h, fmap, prop, asText) {
 				h('input.new-todo placeholder="What needs to be done?" autofocus=true /', {
 					value: prop('text'),
 					oninput: function(e, state, call) {
-						call('set', 'text', e.target.value);
+						call('setText', e.target.value);
 					},
 
 					onkeydown: function(e, state, call) {
 						if(e.which === 13) {
 							e.preventDefault();
 							call('addTodo');
-							call('set', 'text', '');
+							call('setText', '');
 						}
 					}
 				})
