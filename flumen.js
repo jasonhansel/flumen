@@ -1,3 +1,7 @@
+/*!
+ * Flumen Pre-release
+ */
+
 /* globals document, define, module */
 /* exported flumen */
 
@@ -157,28 +161,6 @@ function parseTagSpec(tagspec, attrs)  {
 	}
 
 	return new TagSpec(tag, attrs, events, autoclose);
-
-
-	// return rest.split(/(?=[#.])/).reduce(function(current, part) {
-	// 	if(!part) {
-
-	// 	} else if(part[0] === '#') {
-	// 		current.attrs.id = part.slice(1);
-	// 	} else if (part[0] === '.') {
-	// 		if(typeof current.attrs.class == 'string') {
-	// 			current.attrs.class += ' ' + part.slice(1);
-	// 		} else {
-	// 			current.attrs.class = current.attrs.class.compose(fmap(function(x) {
-	// 				return x + ' ' + part.slice(1);
-	// 			}));
-	// 		}
-	// 	}
-	// 	return current;
-	// }, {
-	// 	tag: tag,
-	// 	attrs: attrs,
-	// 	events: events
-	// });
 }
 
 function h(tagspec, att, slash) {
@@ -216,7 +198,7 @@ function h(tagspec, att, slash) {
 					var arr = [];
 					fn(val.diff, val.state, function () {
 						var args = Array.prototype.slice.call(arguments);
-						arr.push(new Bubble(new Either.Feedback(args)));
+						arr.push(new Bubble(new LoopFeedback(args)));
 					});
 					sink.event(arr);
 				});
@@ -666,7 +648,7 @@ function enjoin(object) {
 			.compose(stateScan(function(st, v) {
 
 				if(v.increment) {
-					if(v.key !== 'events' && v.key.indexOf('events$$') !== 0) {
+					if(v.key.indexOf('events$$') !== 0) {
 						st.init2++;
 					}
 					return new StateOut(st, new Nothing());
@@ -869,12 +851,9 @@ function stateScan(accum, makeInit, noFirst) {
 // http://ac.els-cdn.com/S0167642399000234/1-s2.0-S0167642399000234-main.pdf?_tid=44e61862-e0c0-11e4-8a27-00000aab0f6b&acdnat=1428807892_b8e514bc06a12258d32adecf1fba5f7b
 	// Discusses 'Stream processors!!!!'
 
-var Either = Base.extend({});
-	Either.Left = Either.extend('value');
-	Either.Right = Either.extend('value');
 
-Either.Feedback = Either.Left;
-Either.IO = Either.Right;
+var LoopFeedback = Base.extend('value');
+var LoopIO = Base.extend('value');
 
 function ue(processor, isAttr) {
 	return new StreamProcessor(function(emit) {
@@ -913,17 +892,17 @@ function loop(streamfac) {
 		function(sink) {
 			var output = new Sink(function(v) {
 					superMatch(v)
-						(Either.Feedback, function(value) {
+						(LoopFeedback, function(value) {
 							inner.event(this);
 						})
-						(Either.IO, function(value) {
+						(LoopIO, function(value) {
 							sink.event(value);
 						})
 					();
 				}),
 				inner = streamfac.sender(output);
 			return new Sink(function(val) {
-				inner.event(new Either.IO(val));
+				inner.event(new LoopIO(val));
 			});
 		}
 	);
@@ -995,17 +974,17 @@ function component(ctrl, view) {
 	return loop(
 			fmap(function(x) {
 				return superMatch(x)
-					(Either.Left, function(x) {
-						return new SpecificEvent('left', x);
+					(LoopFeedback, function(x) {
+						return new SpecificEvent('feedback', x);
 					})
-					(Either.Right, function(x) {
-						return new SpecificEvent('right', x);
+					(LoopIO, function(x) {
+						return new SpecificEvent('io', x);
 					})
 				();
 			})
 			.compose(simpleEnjoin({
-				left: ctrl,
-				right: fmap(function(x) {
+				feedback: ctrl,
+				io: fmap(function(x) {
 					return x;
 				})
 			}))
@@ -1014,7 +993,7 @@ function component(ctrl, view) {
 				if(Bubble.match(v)) {
 					return v.data;
 				}
-				return new Either.IO(v);
+				return new LoopIO(v);
 			}))
 	);
 }
@@ -1031,7 +1010,8 @@ return {
 	prop: prop,
 	StreamProcessor: StreamProcessor,
 	scanner: scanner,
-	Either: Either,
+	LoopFeedback: LoopFeedback,
+	LoopIO: LoopIO,
 	flatMap: flatMap,
 	Bubble: Bubble,
 	UniversalEvent: UniversalEvent,
