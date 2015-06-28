@@ -706,6 +706,10 @@ function runCommand(ch, node, fullDiff, cb) {
 		(SetAttributeCommand, function(name, value) {
 			if(name == 'checked') {
 				node.checked = value;
+			} else if(name == 'value') {
+				if(node.value !== value) {
+					node.value = value;
+				}
 			} else {
 				node.setAttribute(name, value);
 			}

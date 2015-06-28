@@ -109,6 +109,7 @@ flumen.view(function(h, fmap, prop, asText) {
 						if(e.which === 13) {
 							e.preventDefault();
 							call('addTodo');
+							call('set', 'text', '');
 						}
 					}
 				})
