@@ -140,7 +140,10 @@ function parseTagSpec(tagspec, attrs)  {
 			tagspec = tagspec.slice(part.length);
 		} else if (part = /^ (\w+)=((?:\w|-)+|\"[^"]*?\")/.exec(tagspec) ) {
 
+			/* jshint -W110 */
 			if(part[2][0] === '"' || part[2][0] === "'") {
+			/* jshint +W110 */
+
 				// Allow string escapes
 				part[2] = JSON.parse(part[2]);
 			}
@@ -237,9 +240,8 @@ function h(tagspec, att, slash) {
 						return new Just(this);
 					})
 					(StateDiff, function(state, diff) {
-						var children = [];
-
-						var patches = [];
+						var children = [],
+							patches = [];
 
 						for(var k in state) {
 							if(k.indexOf('attrs::') === 0) {
@@ -249,7 +251,6 @@ function h(tagspec, att, slash) {
 								children[k.slice(10) * 1] = state[k];
 							}
 						}
-
 
 						Object.keys(events).forEach(function(k) {
 							patches.push(new AttachEventCommand(k));
@@ -294,6 +295,7 @@ function h(tagspec, att, slash) {
 								} else {
 									return new Nothing();
 								}
+
 							})
 						();
 					})
@@ -332,9 +334,7 @@ function h(tagspec, att, slash) {
 							.compose(fmap(function(x) {
 								return new StateDiff(Array.isArray(x) ? x : [], null);
 							})),
-						right: fmap(function(x) {
-							return x;
-						})
+						right: fmap(function(x) { return x; })
 					})
 				)
 				.compose(stateScan(function(state, v) {
@@ -365,20 +365,18 @@ function h(tagspec, att, slash) {
 					);
 				}))
 				.compose(new StreamProcessor(function(emit) {
-					var sps = {};
-					var deleted = {};
-
-					var xstate = [];
-					var lastState = [];
+					var childProcessors = {},
+						stateByPosition = [],
+						lastState = [];
 
 					emit.event( new Just(new StateDiff([], null)) );
 
 					return new Sink(function(arr) {
 						superMatch(arr)
 							(SpecificEvent, function(path, data) {
-								if(!deleted[path]) {
-									sps[path].event(data);
-								}
+
+									childProcessors[path].event(data);
+
 							})
 							(StateDiff, function(state, diff) {
 
@@ -389,8 +387,8 @@ function h(tagspec, att, slash) {
 										(InsertChange, function(index, value) {
 											var notFirst = false,
 												key = keyer(value);
-											sps[key] = mapper().sender(new Sink(function(v) {
-												if(!deleted[key]) {
+											childProcessors[key] = mapper()
+												.sender(new Sink(function(v) {
 													if(Bubble.match(v)) {
 														emit.event(
 															new Just(v)
@@ -404,11 +402,11 @@ function h(tagspec, att, slash) {
 															}
 														}
 
-														xstate[loc] = new AddFullDiffCommand(key, v.state);
+														stateByPosition[loc] = new AddFullDiffCommand(key, v.state);
 
 														emit.event(
 															new Just(new StateDiff(
-																xstate,
+																stateByPosition,
 																new AddFullDiffCommand(
 																	key,
 																	notFirst ?
@@ -420,17 +418,15 @@ function h(tagspec, att, slash) {
 
 														notFirst = true;
 													}
-												}
-											}));
+												}));
 										})
 										(DeleteChange, function(index, value) {
 											var keyx = keyer(value);
-											deleted[keyx] = true;
-											xstate.splice(index, 1);
+											stateByPosition.splice(index, 1);
 											emit.event(new Just(
-												new StateDiff(xstate, new DeleteChildCommand(index))
+												new StateDiff(stateByPosition, new DeleteChildCommand(index))
 											));
-											delete sps[keyx];
+											delete childProcessors[keyx];
 										})
 										(ReorderChange, function(oldIndex, newIndex) {
 											throw new Error('Reorders are not yet implemented');
@@ -439,9 +435,7 @@ function h(tagspec, att, slash) {
 								});
 
 								state.forEach(function(x) {
-									if(!deleted[keyer(x)])  {
-										sps[ keyer(x) ].event( new UniversalEvent(x) );
-									}
+									childProcessors[ keyer(x) ].event( new UniversalEvent(x) );
 								});
 
 							})
