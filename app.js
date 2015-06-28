@@ -93,7 +93,6 @@ var stateProcessor = flumen.controller({
 	}
 });
 
-
 var html =
 flumen.view(function(h, fmap, prop, asText) {
 	return h()(
@@ -191,4 +190,4 @@ flumen.view(function(h, fmap, prop, asText) {
 });
 
 
-flumen.runDom( flumen.component(stateProcessor, html) );
+flumen.run( flumen.component(stateProcessor, html) );

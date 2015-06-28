@@ -906,7 +906,7 @@ function makeCB(getTrigger) {
 	};
 }
 
-var runDom = function(sproc) {
+var run = function(sproc) {
 	var node, trigger;
 	return sproc
 		.process(function(sink) {
@@ -999,7 +999,7 @@ function view(fn) {
 // Removed multi(...) for now
 
 return {
-	runDom: runDom,
+	run: run,
 	controller: controller,
 	component: component,
 	view: view
