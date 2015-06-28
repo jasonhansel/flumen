@@ -994,18 +994,8 @@ function component(ctrl, view) {
 return {
 	runDom: runDom,
 	h: h,
-	enjoin: enjoin,
-	loop: loop,
-	Sink: Sink,
 	fmap: fmap,
 	prop: prop,
-	StreamProcessor: StreamProcessor,
-	scanner: scanner,
-	LoopFeedback: LoopFeedback,
-	LoopIO: LoopIO,
-	flatMap: flatMap,
-	Bubble: Bubble,
-	UniversalEvent: UniversalEvent,
 	ue: ue,
 	controller: controller,
 	component: component
