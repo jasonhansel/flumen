@@ -13,9 +13,6 @@
 // - Improve performance (test against mercury)
 // - Simplify code, partly by improving Flumen itself
 
-// Known bugs:
-// - After cancelling via escape key, can "un-cancel" by clicking on new-todo <input>
-
 var stateProcessor = flumen.controller({
 	init: function() {
 		return {
@@ -71,17 +68,26 @@ var stateProcessor = flumen.controller({
 		});
 		return state;
 	},
-	saveChange: function(state, value, todo) {
+	saveChange: function(state, todo) {
 		state.todos = state.todos.map(function(t) {
 			if(t.ID === todo.ID) {
-				t.Name = value;
+				t.Name = t.workingText;
 				t.editing = false;
 			}
 			return t;
 		});
 		return state;
 	},
-	cancelChange: function(state, value, todo) {
+	setWorkingText: function(state, value, todo) {
+		state.todos = state.todos.map(function(t) {
+			if(t.ID === todo.ID) {
+				t.workingText = value;
+			}
+			return t;
+		});
+		return state;
+	},
+	cancelChange: function(state, todo) {
 		state.todos = state.todos.map(function(t) {
 			if(t.ID === todo.ID) {
 				t.workingText = t.Name;
@@ -149,17 +155,22 @@ flumen.view(function(h, fmap, prop, asText) {
 							type: 'text',
 							value:  prop('workingText'),
 
+							oninput: function(e, state, call) {
+								call('setWorkingText', e.target.value, state);
+							},
+
 							// also other events
 							onblur: function(e, state, call) {
-								call('saveChange', e.target.value, state);
+								call('saveChange', state);
 							},
 
 							onkeydown: function(e, state, call) {
 								if(e.which === 13) {
-									// console.log(state);
-									call('saveChange', e.target.value, state);
+									call('saveChange', state);
 								} else if(e.which === 27) {
-									call('cancelChange', e.target.value, state);
+									call('cancelChange', state);
+									// This also triggers saveChange because of the following onblur()
+									// however, that causes no problems
 								}
 							}
 
