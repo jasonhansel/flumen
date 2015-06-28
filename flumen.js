@@ -425,12 +425,12 @@ function h(tagspec, att, slash) {
 												}));
 										})
 										(DeleteChange, function(index, value) {
-											var keyx = keyer(value);
+											var key = keyer(value);
 											stateByPosition.splice(index, 1);
 											emit.event(new Just(
 												new StateDiff(stateByPosition, new DeleteChildCommand(index))
 											));
-											delete childProcessors[keyx];
+											delete childProcessors[key];
 										})
 										(ReorderChange, function(oldIndex, newIndex) {
 											throw new Error('Reorders are not yet implemented');
