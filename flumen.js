@@ -913,7 +913,7 @@ var runDom = function(sproc) {
 	return sproc
 		.process(function(sink) {
 			trigger = sink.event.bind(sink);
-			sink.event(new UniversalEvent({}));
+			// sink.event(new UniversalEvent({ }));
 		}, function(change) {
 			if(node == null) {
 				var cr = change.state;
@@ -958,6 +958,7 @@ function controller(spec) {
 		return spec[ x[0]].apply(null, [state].concat(x.slice(1)));
 	}, spec.init)
 		.compose(fmap(function(val) {
+			// console.log('STATE', val);
 			return new UniversalEvent(val);
 		}));
 }

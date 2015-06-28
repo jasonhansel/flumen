@@ -155,13 +155,10 @@ h()(
 					),
 					h('input.edit /', {
 						type: 'text',
-						value:  flumen.fmap(function(state) {
-							return state ? state.workingText : '';
-						}),
+						value:  flumen.prop('workingText'),
 
 						// also other events
 						onblur: function(e, state, call) {
-
 							call('saveChange', e.target.value, state);
 						},
 
@@ -181,16 +178,17 @@ h()(
 			}),
 			h('footer', {
 				class: flumen.fmap(function(state) {
-					return (state && state.todos && state.todos.length) ? 'footer' : 'hidden';
+					// console.log('state', state);
+					return (state.todos && state.todos.length) ? 'footer' : 'hidden';
 				})
 			})(
 				h('span.todo-count')(
 					h('strong')( ue(flumen.fmap(function(state) {
-						var len = state && state.todos && state.todos.length;
+						var len = state.todos && state.todos.length;
 						return len;
 					})) ),
 					ue( flumen.fmap(function(state) {
-						var len = state && state.todos && state.todos.length;
+						var len = state.todos && state.todos.length;
 						return len === 1 ? ' item left' : ' items left';
 					}) )
 				),
