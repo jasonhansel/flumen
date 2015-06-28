@@ -374,9 +374,7 @@ function h(tagspec, att, slash) {
 					return new Sink(function(arr) {
 						superMatch(arr)
 							(SpecificEvent, function(path, data) {
-
-									childProcessors[path].event(data);
-
+								childProcessors[path].event(data);
 							})
 							(StateDiff, function(state, diff) {
 
@@ -389,33 +387,41 @@ function h(tagspec, att, slash) {
 												key = keyer(value);
 											childProcessors[key] = mapper()
 												.sender(new Sink(function(v) {
-													if(Bubble.match(v)) {
-														emit.event(new Just(v));
-													} else {
-														var loc = -1;
-														for(var i = 0; i < lastState.length; i++) {
-															if(keyer(lastState[i]) === key) {
-																loc = i;
-																break;
+													var toEmit = superMatch(v)
+														(Bubble, function(val) {
+															return (new Just(this));
+														})
+														(StateDiff, function() {
+
+															var loc = -1;
+															for(var i = 0; i < lastState.length; i++) {
+																if(keyer(lastState[i]) === key) {
+																	loc = i;
+																	break;
+																}
 															}
-														}
 
-														stateByPosition[loc] = new AddFullDiffCommand(key, v.state);
+															stateByPosition[loc] = new AddFullDiffCommand(key, v.state);
 
-														emit.event(
-															new Just(new StateDiff(
-																stateByPosition,
-																new AddFullDiffCommand(
-																	key,
-																	notFirst ?
-																		new OnChildCommand(loc, v.diff) :
-																		new NewChildCommand(v.state)
-																)
-															))
-														);
 
-														notFirst = true;
-													}
+															var oldNotFirst = notFirst;
+															notFirst = true;
+
+															return (
+																new Just(new StateDiff(
+																	stateByPosition,
+																	new AddFullDiffCommand(
+																		key,
+																		oldNotFirst ?
+																			new OnChildCommand(loc, v.diff) :
+																			new NewChildCommand(v.state)
+																	)
+																))
+															);
+
+														})
+													();
+													emit.event(toEmit);
 												}));
 										})
 										(DeleteChange, function(index, value) {
