@@ -811,15 +811,13 @@ function scanner(accum, makeInit) {
 var StateOut = Base.extend('state output');
 
 // Like scanner but separates state from output.
-function stateScan(accum, makeInit, noFirst) {
+function stateScan(accum, makeInit) {
 	return new StreamProcessor(function(sink) {
 		var state;
 		superMatch(makeInit())
 			(StateOut, function(newState, output) {
 				state = newState;
-				if(!noFirst) {
-					sink.event(output);
-				}
+				sink.event(output);
 			})
 		();
 		return new Sink(function(val) {
