@@ -29,20 +29,11 @@ var Base = (function extender(xtends) {
 		// This allows for much shorter class definitions
 		if(!abstract) {
 			Constructor = function(obj) {
-				var i;
-				// if(arguments.length == 1 && fields.length > 1) {
-				// 	// new Point({x: 1, y: 2}) form
-				// 	throw new Error();
-				// 	for(i in obj) {
-				// 		this[i] = obj[i];
-				// 	}
-				// } else {
-					// new Point(1, 2) form
-					i = arguments.length;
-					while(i--) {
-						this[ fields[i] ] = arguments[i];
-					}
-				// }
+				var i = arguments.length;
+				while(i--) {
+					this[ fields[i] ] = arguments[i];
+				}
+				this.__asArray = [].slice.call(arguments);
 				Object.freeze(this);
 			};
 		} else {
@@ -59,11 +50,6 @@ var Base = (function extender(xtends) {
 			Constructor.extend = extender(Constructor);
 		} else {
 			fields = fields.split(' ');
-			Constructor.prototype.toArray = function() {
-				return fields.map(function(field) {
-					return this[field];
-				}, this);
-			};
 		}
 
 		Constructor.match = function(x) { return x && typeof x == 'object' &&  x instanceof Constructor; };
@@ -84,7 +70,7 @@ function superMatch(obj) {
 				// If the second argument is "true", just pass through
 				value = obj;
 			} else {
-				value = fn.apply(obj, obj.toArray());
+				value = fn.apply(obj, obj.__asArray);
 			}
 			return function dn() {
 				return arguments.length ? dn : value;
