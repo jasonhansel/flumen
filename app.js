@@ -102,9 +102,7 @@ h()(
 		h('header.header')(
 			h('h1')('todos'),
 			h('input.new-todo placeholder="What needs to be done?" autofocus=true /', {
-				value: flumen.fmap(function(state) {
-					return state ? state.text : '';
-				}),
+				value: flumen.prop('text'),
 				oninput: function(e, state, call) {
 					call('set', 'text', e.target.value);
 				},
