@@ -92,9 +92,6 @@ var stateProcessor = flumen.controller({
 			return t;
 		});
 		return state;
-	},
-	nil: function(state) {
-		return state;
 	}
 });
 
