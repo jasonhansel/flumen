@@ -34,7 +34,7 @@ var Base = (function extender(xtends) {
 				while(i--) {
 					this[ fields[i] ] = arguments[i];
 				}
-				this.__asArray = [].slice.call(arguments);
+				this.__asArguments = arguments;
 				Object.freeze(this);
 			};
 		} else {
@@ -69,7 +69,7 @@ function superMatch(obj) {
 				// If the second argument is "true", just pass through
 				value = obj;
 			} else {
-				value = fn.apply(obj, obj.__asArray);
+				value = fn.apply(obj, obj.__asArguments);
 			}
 			return function dn() {
 				return arguments.length ? dn : value;
