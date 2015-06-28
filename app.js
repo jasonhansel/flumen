@@ -1,9 +1,6 @@
 /* jshint undef: true */
 /* globals flumen */
 
-var h = flumen.h,
-	asText = flumen.asText,
-	fmap = flumen.fmap;
 
 // This implements TodoMVC. It is based off of Mercury's version.
 
@@ -98,98 +95,100 @@ var stateProcessor = flumen.controller({
 
 
 var html =
-h()(
-	h('section.todoapp')(
-		h('header.header')(
-			h('h1')('todos'),
-			h('input.new-todo placeholder="What needs to be done?" autofocus=true /', {
-				value: flumen.prop('text'),
-				oninput: function(e, state, call) {
-					call('set', 'text', e.target.value);
-				},
+flumen.view(function(h, fmap, prop, asText) {
+	return h()(
+		h('section.todoapp')(
+			h('header.header')(
+				h('h1')('todos'),
+				h('input.new-todo placeholder="What needs to be done?" autofocus=true /', {
+					value: prop('text'),
+					oninput: function(e, state, call) {
+						call('set', 'text', e.target.value);
+					},
 
-				onkeydown: function(e, state, call) {
-					if(e.which === 13) {
-						e.preventDefault();
-						call('addTodo');
-					}
-				}
-			})
-		),
-		h('section.main')(
-			h('input.toggle-all#toggle-all type=checkbox /',{
-				onchange: function(e, state, call) {
-					call('changeAll', e.target.checked);
-				}
-			}),
-			h('label for=toggle-all')('Mark all as incomplete'),
-			h('ul.todo-list').each( flumen.prop('todos'), function() {
-				return h('li', {
-					class: fmap(function(v) { return (v.completed ? 'completed' : '') + (v.editing ? ' editing' : ''); })
-				})(
-					h('div.view')(
-						h('input.toggle type=checkbox /', {
-							onchange: function(e, state, call) {
-								call('toggleCompleted', state);
-							},
-							checked: flumen.prop('completed')
-						}),
-						h('label', {
-							ondblclick: function(e, state, call) {
-								call('startEditing', state);
-							}
-						})(
-							asText(flumen.prop('Name'))
-						),
-						h('button.destroy /', {
-							onclick: function(e, state, call) {
-								call('deleteTodo', state);
-							}
-						})
-					),
-					h('input.edit /', {
-						type: 'text',
-						value:  flumen.prop('workingText'),
-
-						// also other events
-						onblur: function(e, state, call) {
-							call('saveChange', e.target.value, state);
-						},
-
-						onkeydown: function(e, state, call) {
-							if(e.which === 13) {
-								// console.log(state);
-								call('saveChange', e.target.value, state);
-							} else if(e.which === 27) {
-								call('cancelChange', e.target.value, state);
-							}
+					onkeydown: function(e, state, call) {
+						if(e.which === 13) {
+							e.preventDefault();
+							call('addTodo');
 						}
+					}
+				})
+			),
+			h('section.main')(
+				h('input.toggle-all#toggle-all type=checkbox /',{
+					onchange: function(e, state, call) {
+						call('changeAll', e.target.checked);
+					}
+				}),
+				h('label for=toggle-all')('Mark all as incomplete'),
+				h('ul.todo-list').each( prop('todos'), function() {
+					return h('li', {
+						class: fmap(function(v) { return (v.completed ? 'completed' : '') + (v.editing ? ' editing' : ''); })
+					})(
+						h('div.view')(
+							h('input.toggle type=checkbox /', {
+								onchange: function(e, state, call) {
+									call('toggleCompleted', state);
+								},
+								checked: prop('completed')
+							}),
+							h('label', {
+								ondblclick: function(e, state, call) {
+									call('startEditing', state);
+								}
+							})(
+								asText(prop('Name'))
+							),
+							h('button.destroy /', {
+								onclick: function(e, state, call) {
+									call('deleteTodo', state);
+								}
+							})
+						),
+						h('input.edit /', {
+							type: 'text',
+							value:  prop('workingText'),
 
-					})
-				);
-			}, function(v) {
-				return v.ID;
-			}),
-			h('footer', {
-				class: fmap(function(state) { return state.todos.length ? 'footer' : 'hidden'; })
-			})(
-				h('span.todo-count')(
-					h('strong')(
-						asText(fmap(function(state) { return state.todos.length; }))
+							// also other events
+							onblur: function(e, state, call) {
+								call('saveChange', e.target.value, state);
+							},
+
+							onkeydown: function(e, state, call) {
+								if(e.which === 13) {
+									// console.log(state);
+									call('saveChange', e.target.value, state);
+								} else if(e.which === 27) {
+									call('cancelChange', e.target.value, state);
+								}
+							}
+
+						})
+					);
+				}, function(v) {
+					return v.ID;
+				}),
+				h('footer', {
+					class: fmap(function(state) { return state.todos.length ? 'footer' : 'hidden'; })
+				})(
+					h('span.todo-count')(
+						h('strong')(
+							asText(fmap(function(state) { return state.todos.length; }))
+						),
+						asText(fmap(function(state) { return state.todos.length === 1 ? ' item left' : ' items left'; }))
 					),
-					asText(fmap(function(state) { return state.todos.length === 1 ? ' item left' : ' items left'; }))
-				),
-				h('ul.filters /'),
-				h('button /')
+					h('ul.filters /'),
+					h('button /')
+				)
 			)
+		),
+		h('footer.info')(
+			h('p')('Double-click to edit a todo'),
+			h('p')('Written by Jason Hansel'),
+			h('p')('TodoMVC implementation for Flumen')
 		)
-	),
-	h('footer.info')(
-		h('p')('Double-click to edit a todo'),
-		h('p')('Written by Jason Hansel'),
-		h('p')('TodoMVC implementation for Flumen')
-	)
-);
+	);
+});
 
 
 flumen.runDom( flumen.component(stateProcessor, html) );

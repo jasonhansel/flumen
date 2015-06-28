@@ -979,7 +979,9 @@ function component(ctrl, view) {
 					return x;
 				})
 			}))
-			.compose(view)
+			.compose(
+				view()
+			)
 			.compose(fmap(function(v) {
 				if(Bubble.match(v)) {
 					return v.data;
@@ -989,16 +991,19 @@ function component(ctrl, view) {
 	);
 }
 
+function view(fn) {
+	return function() {
+		return fn(h, fmap, prop, asText);
+	};
+}
+
 // Removed multi(...) for now
 
 return {
 	runDom: runDom,
-	h: h,
-	fmap: fmap,
-	prop: prop,
-	asText: asText,
 	controller: controller,
-	component: component
+	component: component,
+	view: view
 };
 
 }));
