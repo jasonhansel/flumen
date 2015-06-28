@@ -30,18 +30,19 @@ var Base = (function extender(xtends) {
 		if(!abstract) {
 			Constructor = function(obj) {
 				var i;
-				if(arguments.length == 1 && fields.length > 1) {
-					// new Point({x: 1, y: 2}) form
-					for(i in obj) {
-						this[i] = obj[i];
-					}
-				} else {
+				// if(arguments.length == 1 && fields.length > 1) {
+				// 	// new Point({x: 1, y: 2}) form
+				// 	throw new Error();
+				// 	for(i in obj) {
+				// 		this[i] = obj[i];
+				// 	}
+				// } else {
 					// new Point(1, 2) form
 					i = arguments.length;
 					while(i--) {
 						this[ fields[i] ] = arguments[i];
 					}
-				}
+				// }
 				Object.freeze(this);
 			};
 		} else {
@@ -236,16 +237,10 @@ function h(tagspec, att, slash) {
 		return fmap(function(stateL) {
 				return superMatch(stateL)
 					(EventData, function(data) {
-						return new SpecificEvent({
-							path: 'events::' + data.type,
-							data: this
-						});
+						return new SpecificEvent('events::' + data.type, this);
 					})
 					(SpecificEvent, function(path, data) {
-						return new SpecificEvent({
-							path: 'children::' + path,
-							data: data
-						});
+						return new SpecificEvent('children::' + path, data);
 					})
 					(UniversalEvent, true)
 				();
@@ -323,10 +318,7 @@ function h(tagspec, att, slash) {
 	result.each = function(array, mapper, keyer) {
 		var parent = result;
 		return fmap(function(evt) {
-			return new SpecificEvent({
-				path: 'children',
-				data: evt
-			});
+			return new SpecificEvent('children', evt);
 		}).compose(
 			enjoin({
 				parent: parent(),
@@ -908,10 +900,7 @@ function loop(streamfac) {
 function makeCB(getTrigger) {
 	return function cb(loc, evt) {
 		getTrigger()(loc.reduceRight(function(curr, next) {
-			return new SpecificEvent({
-				path: next,
-				data: curr
-			});
+			return new SpecificEvent(next, curr);
 		}, new EventData(evt)));
 	};
 }
@@ -949,10 +938,7 @@ var run = function(sproc) {
 
 				runCommand(change.diff, node, [], function(loc, evt) {
 					trigger(loc.reduceRight(function(curr, next) {
-						return new SpecificEvent({
-							path: next,
-							data: curr
-						});
+						return new SpecificEvent(next, curr);
 					}, new EventData(evt)));
 				});
 			}
