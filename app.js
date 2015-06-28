@@ -1,13 +1,12 @@
 /* jshint undef: true */
 /* globals flumen */
 
-
 // This implements TodoMVC. It is based off of Mercury's version.
 
 // To do:
 // - localStorage
 // - Routing
-// - Divide into components
+// - Divide into components (started)
 // - Add all features to ul.filters and the following button
 // - Fix miscellaneous bugs
 // - Improve performance (test against mercury)
@@ -99,8 +98,58 @@ var stateProcessor = flumen.controller({
 	}
 });
 
-var html =
-flumen.view(function(h, fmap, prop, asText) {
+var todoItem = flumen.view(function(h, fmap, prop, asText) {
+	return h('li', {
+		class: fmap(function(v) { return (v.completed ? 'completed' : '') + (v.editing ? ' editing' : ''); })
+	})(
+		h('div.view')(
+			h('input.toggle type=checkbox /', {
+				onchange: function(e, state, call) {
+					call('toggleCompleted', state);
+				},
+				checked: prop('completed')
+			}),
+			h('label', {
+				ondblclick: function(e, state, call) {
+					call('startEditing', state);
+				}
+			})(
+				asText(prop('Name'))
+			),
+			h('button.destroy /', {
+				onclick: function(e, state, call) {
+					call('deleteTodo', state);
+				}
+			})
+		),
+		h('input.edit /', {
+			type: 'text',
+			value:  prop('workingText'),
+
+			oninput: function(e, state, call) {
+				call('setWorkingText', e.target.value, state);
+			},
+
+			// also other events
+			onblur: function(e, state, call) {
+				call('saveChange', state);
+			},
+
+			onkeydown: function(e, state, call) {
+				if(e.which === 13) {
+					call('saveChange', state);
+				} else if(e.which === 27) {
+					call('cancelChange', state);
+					// This also triggers saveChange because of the following onblur()
+					// however, that causes no problems
+				}
+			}
+
+		})
+	);
+});
+
+var html = flumen.view(function(h, fmap, prop, asText) {
 	return h()(
 		h('section.todoapp')(
 			h('header.header')(
@@ -127,58 +176,11 @@ flumen.view(function(h, fmap, prop, asText) {
 					}
 				}),
 				h('label for=toggle-all')('Mark all as incomplete'),
-				h('ul.todo-list').each( prop('todos'), function() {
-					return h('li', {
-						class: fmap(function(v) { return (v.completed ? 'completed' : '') + (v.editing ? ' editing' : ''); })
-					})(
-						h('div.view')(
-							h('input.toggle type=checkbox /', {
-								onchange: function(e, state, call) {
-									call('toggleCompleted', state);
-								},
-								checked: prop('completed')
-							}),
-							h('label', {
-								ondblclick: function(e, state, call) {
-									call('startEditing', state);
-								}
-							})(
-								asText(prop('Name'))
-							),
-							h('button.destroy /', {
-								onclick: function(e, state, call) {
-									call('deleteTodo', state);
-								}
-							})
-						),
-						h('input.edit /', {
-							type: 'text',
-							value:  prop('workingText'),
-
-							oninput: function(e, state, call) {
-								call('setWorkingText', e.target.value, state);
-							},
-
-							// also other events
-							onblur: function(e, state, call) {
-								call('saveChange', state);
-							},
-
-							onkeydown: function(e, state, call) {
-								if(e.which === 13) {
-									call('saveChange', state);
-								} else if(e.which === 27) {
-									call('cancelChange', state);
-									// This also triggers saveChange because of the following onblur()
-									// however, that causes no problems
-								}
-							}
-
-						})
-					);
-				}, function(v) {
-					return v.ID;
-				}),
+				h('ul.todo-list').each(
+					prop('todos'),
+					todoItem,
+					function(v) { return v.ID; }
+				),
 				h('footer', {
 					class: fmap(function(state) { return state.todos.length ? 'footer' : 'hidden'; })
 				})(
