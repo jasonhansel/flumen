@@ -332,7 +332,7 @@ function h(tagspec, att, slash) {
 							})
 							.compose(array)
 							.compose(fmap(function(x) {
-								return new StateDiff(Array.isArray(x) ? x : [], null);
+								return new StateDiff(x, null);
 							})),
 						right: fmap(function(x) { return x; })
 					})
@@ -345,7 +345,7 @@ function h(tagspec, att, slash) {
 						})
 						(StateDiff, function(arrState, diff) {
 							return superMatch(
-									new StatePair( state.new.slice(0) , arrState.slice(0))
+									new StatePair(state.new.slice(0) , arrState.slice(0))
 								)(StatePair, function(old, neww) {
 									return new StateOut(this, diffArrays(
 										old,
@@ -390,9 +390,7 @@ function h(tagspec, att, slash) {
 											childProcessors[key] = mapper()
 												.sender(new Sink(function(v) {
 													if(Bubble.match(v)) {
-														emit.event(
-															new Just(v)
-														);
+														emit.event(new Just(v));
 													} else {
 														var loc = -1;
 														for(var i = 0; i < lastState.length; i++) {
