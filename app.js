@@ -2,7 +2,7 @@
 /* globals flumen */
 
 var h = flumen.h,
-	ue = flumen.ue;
+	asText = flumen.asText;
 
 // This implements TodoMVC. It is based off of Mercury's version.
 
@@ -140,7 +140,7 @@ h()(
 								call('startEditing', state);
 							}
 						})(
-							ue(flumen.prop('Name'))
+							asText(flumen.prop('Name'))
 						),
 						h('button.destroy /', {
 							onclick: function(e, state, call) {
@@ -178,11 +178,11 @@ h()(
 				})
 			})(
 				h('span.todo-count')(
-					h('strong')( ue(flumen.fmap(function(state) {
+					h('strong')( asText(flumen.fmap(function(state) {
 						var len = state.todos && state.todos.length;
 						return len;
 					})) ),
-					ue( flumen.fmap(function(state) {
+					asText( flumen.fmap(function(state) {
 						var len = state.todos && state.todos.length;
 						return len === 1 ? ' item left' : ' items left';
 					}) )

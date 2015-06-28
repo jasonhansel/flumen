@@ -211,7 +211,7 @@ function h(tagspec, att, slash) {
 		}
 
 		for(k in attrs) {
-			merged[ 'attrs::' + k ] = StreamProcessor.match(attrs[k]) ? ue(attrs[k], true) : attrs[k];
+			merged[ 'attrs::' + k ] = StreamProcessor.match(attrs[k]) ? asText(attrs[k], true) : attrs[k];
 		}
 
 		children.forEach(function(child, index) {
@@ -221,7 +221,7 @@ function h(tagspec, att, slash) {
 		merged = objectMap(merged, function(val, key) {
 
 			if(!StreamProcessor.match(val)) {
-				val = ue( constantize(val), key.indexOf('children::') === 0 ? false : true );
+				val = asText( constantize(val), key.indexOf('children::') === 0 ? false : true );
 			}
 
 			return val;
@@ -841,7 +841,7 @@ function stateScan(accum, makeInit) {
 var LoopFeedback = Base.extend('value');
 var LoopIO = Base.extend('value');
 
-function ue(processor, isAttr) {
+function asText(processor, isAttr) {
 	return new StreamProcessor(function(emit) {
 		var last,
 			first = true;
@@ -996,7 +996,7 @@ return {
 	h: h,
 	fmap: fmap,
 	prop: prop,
-	ue: ue,
+	asText: asText,
 	controller: controller,
 	component: component
 };
