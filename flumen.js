@@ -28,6 +28,7 @@ var Base = (function extender(xtends) {
 		// So for example 'x y' is here equivalent to function(x,y){this.x=x,this.y=y}
 		// This allows for much shorter class definitions
 		if(!abstract) {
+			fields = fields.split(' ');
 			Constructor = function(obj) {
 				var i = arguments.length;
 				while(i--) {
@@ -48,8 +49,6 @@ var Base = (function extender(xtends) {
 				Constructor.prototype[k] = fields[k];
 			}
 			Constructor.extend = extender(Constructor);
-		} else {
-			fields = fields.split(' ');
 		}
 
 		Constructor.match = function(x) { return x && typeof x == 'object' &&  x instanceof Constructor; };
