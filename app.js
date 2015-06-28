@@ -2,7 +2,8 @@
 /* globals flumen */
 
 var h = flumen.h,
-	asText = flumen.asText;
+	asText = flumen.asText,
+	fmap = flumen.fmap;
 
 // This implements TodoMVC. It is based off of Mercury's version.
 
@@ -124,9 +125,7 @@ h()(
 			h('label for=toggle-all')('Mark all as incomplete'),
 			h('ul.todo-list').each( flumen.prop('todos'), function() {
 				return h('li', {
-					class: flumen.fmap(function(v) {
-						return (v.completed ? 'completed' : '') + (v.editing ? ' editing' : '');
-					})
+					class: fmap(function(v) { return (v.completed ? 'completed' : '') + (v.editing ? ' editing' : ''); })
 				})(
 					h('div.view')(
 						h('input.toggle type=checkbox /', {
@@ -172,20 +171,13 @@ h()(
 				return v.ID;
 			}),
 			h('footer', {
-				class: flumen.fmap(function(state) {
-					// console.log('state', state);
-					return (state.todos && state.todos.length) ? 'footer' : 'hidden';
-				})
+				class: fmap(function(state) { return state.todos.length ? 'footer' : 'hidden'; })
 			})(
 				h('span.todo-count')(
-					h('strong')( asText(flumen.fmap(function(state) {
-						var len = state.todos && state.todos.length;
-						return len;
-					})) ),
-					asText( flumen.fmap(function(state) {
-						var len = state.todos && state.todos.length;
-						return len === 1 ? ' item left' : ' items left';
-					}) )
+					h('strong')(
+						asText(fmap(function(state) { return state.todos.length; }))
+					),
+					asText(fmap(function(state) { return state.todos.length === 1 ? ' item left' : ' items left'; }))
 				),
 				h('ul.filters /'),
 				h('button /')
