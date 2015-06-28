@@ -386,8 +386,8 @@ function h(tagspec, att, slash) {
 											var notFirst = false,
 												key = keyer(value);
 											childProcessors[key] = mapper()
-												.sender(new Sink(function(v) {
-													var toEmit = superMatch(v)
+												.compose(fmap(function(v) {
+													return superMatch(v)
 														(Bubble, function(val) {
 															return (new Just(this));
 														})
@@ -402,7 +402,6 @@ function h(tagspec, att, slash) {
 															}
 
 															stateByPosition[loc] = new AddFullDiffCommand(key, v.state);
-
 
 															var oldNotFirst = notFirst;
 															notFirst = true;
@@ -421,8 +420,8 @@ function h(tagspec, att, slash) {
 
 														})
 													();
-													emit.event(toEmit);
-												}));
+												}))
+												.sender(emit);
 										})
 										(DeleteChange, function(index, value) {
 											var key = keyer(value);
