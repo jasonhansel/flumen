@@ -179,9 +179,10 @@ function h(tagspec, att, slash) {
 
 
 		var eventFix = stateScan(function (state, data) {
+			// console.log('GOT', state, data);
 			return superMatch(data)
 				(EventData, function(idata) {
-					return new StateOut(null, new Just( new StateDiff( state, idata ) )) ;
+					return new StateOut(state, new Just( new StateDiff( state, idata ) )) ;
 				})
 				(UniversalEvent, function(state) {
 					return new StateOut(state, new Nothing());
@@ -189,7 +190,7 @@ function h(tagspec, att, slash) {
 			();
 		}, function() {
 			return new StateOut(null, new Nothing());
-		}, true).compose(maybeMap());
+		}).compose(maybeMap());
 
 		function eventWrap(k) {
 			var fn = events[k];

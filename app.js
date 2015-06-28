@@ -17,7 +17,6 @@ var h = flumen.h,
 
 // Known bugs:
 // - After cancelling via escape key, can "un-cancel" by clicking on new-todo <input>
-// - Editing/saving todos seems to be broken
 
 var stateProcessor = flumen.controller({
 	init: function() {
@@ -162,11 +161,13 @@ h()(
 
 						// also other events
 						onblur: function(e, state, call) {
+
 							call('saveChange', e.target.value, state);
 						},
 
 						onkeydown: function(e, state, call) {
 							if(e.which === 13) {
+								// console.log(state);
 								call('saveChange', e.target.value, state);
 							} else if(e.which === 27) {
 								call('cancelChange', e.target.value, state);

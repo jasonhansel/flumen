@@ -6,7 +6,7 @@ module.exports = function(grunt) {
 		'http-server': {
 			'dev': {
 				port: 3000,
-				cache: -1
+				cache: 0
 			}
 		},
 		'uglify': {
